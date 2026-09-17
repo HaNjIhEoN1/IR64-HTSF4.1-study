@@ -1,4 +1,4 @@
-# Structural and sequence-level dissection of qHTSF4.1 reveals a chromosomal inversion and a candidate interval in rice
+# Structural and sequence-level dissection of qHTSF4.1 reveals a chromosomal inversion and a candidate interval for heat tolerance at flowering in rice
 
 ## Overview
 
