@@ -1,11 +1,11 @@
 """
 python fst_pipeline.py \
-  --vcf jap.no_missing.vcf.gz \
+  --vcf japonica.no_missing.vcf.gz \
   --tol tol.list \
   --sus sus.list \
   --window 10000 \
   --step 2000 \
-  --out jap_fst
+  --out japonica_fst
 """
 
 
