@@ -2,7 +2,7 @@
 
 ## Overview
 
- This repository contains scripts and derived datasets supporting structural and population-genomic analyses of the rice flowering-stage heat-tolerance locus qHTSF4.1. The deposited materials cover genome-wide Hudson's FST analysis, a sensitivity analysis excluding Giza178, sequence-identity-based introgression mapping, visualization of introgressed regions and previously reported reproductive-stage heat-tolerance QTLs, and long-read alignment analysis at the corresponding inversion boundaries.
+This repository contains scripts and derived datasets supporting structural and population-genomic analyses of the rice flowering-stage heat-tolerance locus qHTSF4.1. The deposited materials cover genome-wide Hudson's FST analysis, a sensitivity analysis excluding Giza178, matched-region empirical comparison, sequence-identity-based introgression mapping, visualization of introgressed regions and previously reported reproductive-stage heat-tolerance QTLs, and long-read alignment analysis at the corresponding inversion boundaries.
 
 ## Repository contents
 
@@ -12,6 +12,8 @@
 | `hudson_fst_5samples_10kb_nonoverlapping.tsv` | Contains genome-wide 10-kb window results for the five-accession comparison. |
 | `hudson_fst_4samples_noGiza178_10kb_nonoverlapping.tsv` | Contains 10-kb window results from the sensitivity analysis excluding Giza178. |
 | `qHTSF4.1_5samples_callable_biallelic.vcf` | Contains callable biallelic variants within *qHTSF4.1* for the five accessions used in the regional analysis. |
+| `matched_hudson_fst.py` | Calculates regional Hudson's *F*ST directly from the VCF and compares the candidate interval with genome-wide controls matched for interval length and informative SNP count. |
+| `qHTSF4.1_matched_region.matched_controls.tsv` | Contains the coordinates, informative SNP counts, regional *F*ST values, and empirical comparison results for the 192 matched control regions. |
 | `detect_introgression_regions_nucmer.R` | Uses sequence-identity information derived from NUCmer and `show-coords` alignments to assign IR64-HTSF4.1 genomic windows to the more similar parental reference. |
 | `plot_heatQTL_introgression_regions.py` | Plots N22-assigned genomic segments and previously reported N22-derived reproductive-stage heat-tolerance QTLs or linked markers in the IR64-HTSF4.1 coordinate system. |
 
@@ -30,9 +32,11 @@ IR64-HTSF4.1 is an IR64-derived backcross line developed using Nagina 22 (N22) a
 
 ## Analysis 1: Hudson's *F*ST
 
+### Genomewide_hudson_fst
+
 ### Purpose
 
-This analysis evaluates sequence differentiation between accessions previously classified as heat tolerant and heat susceptible. Genome-wide estimates provide an empirical background for interpreting differentiation within *qHTSF4.1*. A second analysis excluding Giza178 evaluates whether the regional profile depends on its inclusion in the tolerant group.
+This analysis evaluates sequence differentiation between accessions previously classified as heat tolerant and heat susceptible. Genome-wide estimates and matched-region comparisons provide an empirical background for interpreting differentiation within *qHTSF4.1*. A sensitivity analysis excluding Giza178 evaluates whether the regional profile depends on its inclusion in the tolerant group.
 
 ### Sample groups
 
@@ -45,11 +49,32 @@ The classifications were obtained from previous studies rather than phenotyping 
 
 ### Input and filtering
 
-The genome-wide analysis requires a multi-sample VCF containing the five accessions. The VCF was filtered to retain callable biallelic SNPs with non-missing diploid genotypes in all accessions included in each comparison. Hudson's *F*ST was calculated using scikit-allel v1.3.13 and summarized in non-overlapping 10-kb windows.
+The genome-wide analysis requires a multi-sample VCF containing the five accessions. The VCF was filtered to retain callable biallelic SNPs with non-missing diploid genotypes in all accessions included in each comparison. Hudson's *F*ST was calculated using scikit-allel v1.3.13 and summarized using a window size of 10,000 bp and a step size of 10,000 bp, producing non-overlapping windows.
 
 `qHTSF4.1_5samples_callable_biallelic.vcf` is the regional five-accession VCF used for analysis of variants within *qHTSF4.1*. It is not a substitute for the genome-wide VCF required to regenerate the genome-wide window results.
 
 The LD-defined candidate interval examined within the regional VCF is Chr04:18,535,070-18,569,718 in the Nipponbare reference assembly (GCA_001433935.1).
+
+### Matched-region analysis
+
+### Purpose
+
+This analysis compares differentiation across the 34,649-bp candidate interval with genome-wide control regions matched for interval length and informative SNP count.
+
+### Inputs
+
+- Genome-wide callable biallelic SNP VCF for the five-accession comparison
+- Tolerant-group sample list: N22, Giza178, and IR64-HTSF4.1
+- Susceptible-group sample list: Azucena and Nipponbare
+- Nipponbare reference FASTA index (`.fai`)
+
+`matched_hudson_fst.py` calculates regional Hudson's *F*ST directly from the VCF as the ratio of summed per-site numerators to summed denominators. Sample-list files contain one VCF sample ID per line.
+
+Each chromosome is divided into non-overlapping 34,649-bp intervals starting at position 1. Incomplete terminal intervals and intervals overlapping the broader *qHTSF4.1* region (`chr04:17867867-18681771`) are excluded. Coordinates are 1-based inclusive.
+
+Informative SNPs have finite Hudson numerator and denominator values and a positive denominator. All eligible controls with informative SNP counts within ±20% of the candidate count are retained. The candidate contains 44 informative SNPs, giving an integer matching range of 36–52 SNPs.
+
+These criteria yielded 192 matched control regions. The candidate's empirical percentile is calculated as the percentage of matched controls with regional *F*ST below the candidate value. The upper-tail probability is calculated as `(b + 1)/(N + 1)`, where `b` is the number of matched controls with *F*ST equal to or greater than the candidate value and `N` is the total number of matched controls.
 
 ## Analysis 2: Introgression-region assignment
 
@@ -81,4 +106,3 @@ This analysis compares N22-assigned genomic segments with previously reported N2
 - IR64-HTSF4.1 chromosome lengths
 
 Published QTL and marker coordinates were converted to the IR64-HTSF4.1 assembly using minimap2 and BLASTN sequence alignments. `plot_heatQTL_introgression_regions.py` jointly visualizes the converted loci and inferred N22-assigned segments.
-
