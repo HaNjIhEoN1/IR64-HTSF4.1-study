@@ -57,11 +57,11 @@ The LD-defined candidate interval examined within the regional VCF is Chr04:18,5
 
 ### Matched-region analysis
 
-### Purpose
+#### Purpose
 
 This analysis compares differentiation across the 34,649-bp candidate interval with genome-wide control regions matched for interval length and informative SNP count.
 
-### Inputs
+#### Inputs
 
 - Genome-wide callable biallelic SNP VCF for the five-accession comparison
 - Tolerant-group sample list: N22, Giza178, and IR64-HTSF4.1
@@ -74,7 +74,7 @@ Each chromosome is divided into non-overlapping 34,649-bp intervals starting at 
 
 Informative SNPs have finite Hudson numerator and denominator values and a positive denominator. All eligible controls with informative SNP counts within ±20% of the candidate count are retained. The candidate contains 44 informative SNPs, giving an integer matching range of 36–52 SNPs.
 
-These criteria yielded 192 matched control regions. The candidate's empirical percentile is calculated as the percentage of matched controls with regional *F*ST below the candidate value. The upper-tail probability is calculated as `(b + 1)/(N + 1)`, where `b` is the number of matched controls with *F*ST equal to or greater than the candidate value and `N` is the total number of matched controls.
+The analysis was run with default settings (`--snp-tolerance 0.20` and `--min-informative-snps 1`), yielding 192 matched control regions. The candidate's empirical percentile is calculated as the percentage of matched controls with regional *F*ST below the candidate value. The upper-tail probability is calculated as `(b + 1)/(N + 1)`, where `b` is the number of matched controls with *F*ST equal to or greater than the candidate value and `N` is the total number of matched controls.
 
 ## Analysis 2: Introgression-region assignment
 
